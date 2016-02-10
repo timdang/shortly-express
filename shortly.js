@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static(__dirname + '/public'));
 
 app.use(session({
-  secret: 'javascript', //verify cookie was created by our site
+  secret: 'javascript',
   resave: false,
   saveUninitialized: true
 }));
@@ -43,7 +43,7 @@ app.get('/', authentication,
     res.render('index');
   });
 
-app.get('/create',
+app.get('/create', authentication,
   function(req, res) {
     res.render('index');
   });
@@ -54,7 +54,7 @@ app.get('/logout',
     res.redirect('/login');
   });
 
-app.get('/links',
+app.get('/links', authentication,
   function(req, res) {
     Links.reset().fetch().then(function(links) {
       res.send(200, links.models);
@@ -126,15 +126,12 @@ app.post('/login', function(req, res) {
 
   user.fetch().then(function(dbUser) {
     if (!dbUser) {
-      console.log('User exists, going to login page.');
       res.redirect('/login');
     } else {
       user.comparePassword(password, function(match) {
         if (match) {
-          console.log('password matches, creating session');
           createSession(req, res, user);
         } else {
-          console.log('password is incorrect, try again');
           res.redirect('/login');
         }
       });
@@ -157,16 +154,12 @@ app.post('/signup', function(req, res) {
       });
       newUser.save().then(function(saveUser) {
         createSession(req, res, saveUser);
-        //add user to db
       });
     } else {
-      console.log('error with signup, sign up again');
       res.redirect('/signup');
     }
   });
 });
-
-
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail

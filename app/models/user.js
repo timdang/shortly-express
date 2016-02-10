@@ -8,17 +8,6 @@ var User = db.Model.extend({
     this.on('creating', this.hashPassword);
   },
 
-  // hashPassword: function(password) {
-  //   var promise = new Promise(function(resolve, reject) {
-  //     bcrypt.hash(password, null, null, function(err, hash) {
-  //       if (err) {
-  //         reject(err);
-  //       }
-  //       resolve(model.set('password', hash));
-  //     });
-  //   });
-  //   return promise;
-  // },
   hashPassword: function(){
     var cipher = Promise.promisify(bcrypt.hash);
     return cipher(this.get('password'), null, null).bind(this)
@@ -26,7 +15,7 @@ var User = db.Model.extend({
         this.set('password', hash);
       })
   },
-  
+
   comparePassword: function(password, callback) {
     var hashedPassword = this.get('password');
     bcrypt.compare(password, hashedPassword, function(err, res){
